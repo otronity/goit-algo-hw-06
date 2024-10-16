@@ -33,12 +33,16 @@ class Record:
         self.phones = []
 
     def add_phone(self, phone):
-        self.phones.append(Phone(phone))
+        if not any(p.value == phone for p in self.phones):
+            self.phones.append(Phone(phone))
 
     def edit_phone(self, phoneold, phonenew):
         for phone in self.phones:
             if phone.value == phoneold:
-                phone.change_phone(phonenew)
+                if not any(p.value == phonenew for p in self.phones):
+                    phone.change_phone(phonenew)
+                else:
+                    self.remove_phone(phoneold)
                 break
 
     def find_phone(self, phone):
@@ -81,6 +85,8 @@ book = AddressBook()
 john_record = Record("John")
 john_record.add_phone("1234567890")
 john_record.add_phone("5555555555")
+print(john_record)
+
 
 # Додавання запису John до адресної книги
 book.add_record(john_record)
