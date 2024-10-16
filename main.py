@@ -13,11 +13,19 @@ class Name(Field):
         self.value = name
 
 class Phone(Field):
-    def add_phone(self, phone):
+    def __init__(self, phone):
+        super().__init__(phone)  
         if bool(re.match(r'^\d{10}$', phone)):
             self.value = phone
         else:
             raise ValueError('Incorrect Phone number')
+
+    # Изменяем номер телефона с проверкой на корректность нового номера   
+    def change_phone(self, phone):
+        if bool(re.match(r'^\d{10}$', phone)):
+            self.value = phone
+        else:
+            raise ValueError('Incorrect New Phone number')
         
 class Record:
     def __init__(self, name):
@@ -25,22 +33,12 @@ class Record:
         self.phones = []
 
     def add_phone(self, phone):
-        try:
-            newphone = Phone(phone)
-            newphone.add_phone(phone)
-            # print(newphone)
-            self.phones.append(newphone)
-        except ValueError as e:
-            print(f"Failed to add phone: {str(e)}")
+        self.phones.append(Phone(phone))
 
     def edit_phone(self, phoneold, phonenew):
         for phone in self.phones:
             if phone.value == phoneold:
-                try:
-                    phone.add_phone(phonenew)
-                except ValueError as e:
-                    # Если новый номер некорректный, генерируем ошибку
-                    print(f"Failed to update phone: {str(e)}")
+                phone.change_phone(phonenew)
                 break
 
     def find_phone(self, phone):
@@ -64,9 +62,7 @@ class AddressBook(UserDict):
         return result[0] if len(result) > 0 else None
     
     def delete(self, name):
-        record = self.find(name)
-        if record:
-            del self.data[record.name.value]
+        del self.data[name]
 
     def __str__(self):
         if not self.data:
@@ -94,7 +90,7 @@ jane_record = Record("Jane")
 jane_record.add_phone("9876543210")
 book.add_record(jane_record)
 
-# Виведення всіх записів у книзі
+# Виведення всіх записів у книзі    
 print(book)
 
 # Знаходження та редагування телефону для John
@@ -109,9 +105,3 @@ print(f"{john.name}: {found_phone}")  # Виведення: John: 5555555555
 
 # Видалення запису Jane
 book.delete("Jane")
-print(book)
-
-book.find("John").edit_phone('5555555555', '1111111') # Failed to update phone: Incorrect Phone number
-john.add_phone("111") # Failed to add phone: Incorrect Phone number
-john.remove_phone('5555555555')
-print(john)
