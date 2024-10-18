@@ -37,8 +37,12 @@ class Record:
             self.phones.append(Phone(phone))
 
     def edit_phone(self, phoneold, phonenew):
+        # перевіряємо чи є номер який хочемо зінити в перліку телефонів
+        if not any(p.value == phoneold for p in self.phones):
+            raise ValueError(f'Incorrect Phone number {phoneold}')
         for phone in self.phones:
             if phone.value == phoneold:
+                # перевіряємо чи є новий номер вже в перліку телефонів
                 if not any(p.value == phonenew for p in self.phones):
                     phone.change_phone(phonenew)
                 else:
